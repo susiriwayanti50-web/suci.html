@@ -1,4 +1,4 @@
-// DATA DEFAULT PRODUK
+ // DATA DEFAULT PRODUK
 const defaultProduk = [
   {
     id: 1,
