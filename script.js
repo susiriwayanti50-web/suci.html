@@ -5,7 +5,7 @@ const defaultProduk = [
     nama: "Smartphone Premium",
     harga: 12000000,
     gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
-    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+    video: "sc.mp4",
     deskripsi: "Spesifikasi utama: layar 120Hz, RAM 12GB, memori 256GB."
   },
   {
