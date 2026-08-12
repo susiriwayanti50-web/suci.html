@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gadget Shop - Management & Store System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Main -->
+    <header id="mainHeader" class="hidden">
+        <h1>Gadget Shop Management System</h1>
+        <div class="user-info">
+            <span id="userInfoText">Login sebagai: -</span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Section Auth / Login -->
+        <div id="authSection" class="auth-container">
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchTab('customer')">Pembeli</button>
+                <button class="tab-btn" onclick="switchTab('admin')">Admin</button>
+            </div>
+
+            <!-- Login Pembeli Form -->
+            <form id="customerLoginForm" onsubmit="loginCustomer(event)">
+                <div class="form-group">
+                    <label for="custName">Nama Pengguna (Pembeli):</label>
+                    <input type="text" id="custName" placeholder="Masukkan nama Anda..." required>
+                </div>
+                <button type="submit" class="btn-primary">Masuk Kebagian Belanja</button>
+            </form>
+
+            <!-- Login Admin Form -->
+            <form id="adminLoginForm" class="hidden" onsubmit="loginAdmin(event)">
+                <div class="form-group">
+                    <label for="adminUser">Username Admin:</label>
+                    <input type="text" id="adminUser" placeholder="Username (suci)" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPass">Password:</label>
+                    <input type="password" id="adminPass" placeholder="Password (333)" required>
+                </div>
+                <button type="submit" class="btn-primary">Masuk Sbg Admin</button>
+            </form>
+        </div>
+
+        <!-- Section Utama Dashboard (Muncul Setelah Login) -->
+        <div id="dashboardSection" class="dashboard-grid hidden">
+
+            <!-- Panel Admin: Manajemen Produk -->
+            <section id="adminPanel" class="card-box hidden">
+                <h2>Panel Administrator (Manajemen Produk)</h2>
+                <form id="productForm" onsubmit="addProduct(event)">
+                    <div class="form-group">
+                        <label for="prodName">Nama Produk:</label>
+                        <input type="text" id="prodName" placeholder="Contoh: Smartphone Premium X" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prodPrice">Harga Produk (Rp):</label>
+                        <input type="number" id="prodPrice" placeholder="Contoh: 12000000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prodDesc">Deskripsi & Spesifikasi:</label>
+                        <textarea id="prodDesc" rows="3" placeholder="Layar 120Hz, RAM 12GB, Storage 256GB..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="prodImage">URL Gambar Produk:</label>
+                        <input type="url" id="prodImage" placeholder="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prodVideo">URL Video Demo (Format MP4):</label>
+                        <input type="url" id="prodVideo" placeholder="https://www.w3schools.com/html/mov_bbb.mp4" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Simpan Produk ke Database</button>
+                </form>
+            </section>
+
+            <!-- Panel Admin: Kelola Pesanan Pembeli -->
+            <section id="adminOrdersPanel" class="card-box hidden">
+                <h2>Kelola Status Pesanan Pembeli</h2>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Pesanan</th>
+                                <th>Pembeli</th>
+                                <th>Item Pesanan</th>
+                                <th>Total Pembayaran</th>
+                                <th>Alamat Pengiriman</th>
+                                <th>Status Saat Ini</th>
+                                <th>Ubah Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminOrderTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Panel Pembeli: Katalog & Belanja -->
+            <section id="buyerPanel" class="card-box">
+                <h2>Katalog Gadget Shop</h2>
+                <div class="product-grid" id="productCatalog"></div>
+            </section>
+
+            <!-- Panel Pembeli: Keranjang Belanja -->
+            <section id="cartPanel" class="card-box">
+                <h2>Keranjang Belanja Saya (<span id="cartCount">0</span> Item)</h2>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Harga</th>
+                                <th>Jumlah</th>
+                                <th>Subtotal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartTableBody"></tbody>
+                    </table>
+                </div>
+                
+                <div class="cart-summary" id="cartSummarySection">
+                    <h3>Total Belanja: <span id="cartTotalAmount">Rp 0</span></h3>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="checkoutAddress">Alamat Pengiriman Lengkap:</label>
+                        <textarea id="checkoutAddress" rows="2" placeholder="Masukkan jalan, RT/RW, Kecamatan, Kota, Kode Pos..."></textarea>
+                    </div>
+                    <button class="btn-primary" onclick="checkoutCart()">Checkout & Beli Sekarang</button>
+                </div>
+            </section>
+
+            <!-- Panel Pembeli: Status Pesanan Saya -->
+            <section id="buyerOrdersPanel" class="card-box">
+                <h2>Status Pesanan Saya</h2>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Pesanan</th>
+                                <th>Item Pesanan</th>
+                                <th>Total Harga</th>
+                                <th>Alamat Pengiriman</th>
+                                <th>Status Pesanan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="buyerOrderTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Script Logic Aplikasi -->
+    <script>
+        const defaultProducts = [
+            {
+                id: 1,
+                name: "Smartphone Premium X",
+                price: 12000000,
+                desc: "Layar 120Hz OLED, Chipset Flagship, RAM 12GB, Kamera 108MP.",
+                image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&auto=format&fit=crop",
+                video: "https://www.w3schools.com/html/mov_bbb.mp4"
+            },
+            {
+                id: 2,
+                name: "Laptop Ultra Pro",
+                price: 18500000,
+                desc: "Intel Core i9 Gen Terbaru, RAM 32GB DDR5, SSD 1TB NVMe, Tipis & Ringan.",
+                image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&auto=format&fit=crop",
+                video: "https://www.w3schools.com/html/mov_bbb.mp4"
+            }
+        ];
+
+        let products = JSON.parse(localStorage.getItem('gs_products')) || defaultProducts;
+        let orders = JSON.parse(localStorage.getItem('gs_orders')) || [];
+        let cart = JSON.parse(localStorage.getItem('gs_cart')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('gs_session')) || null;
+
+        window.onload = function() {
+            saveToStorage();
+            checkSession();
+        };
+
+        function saveToStorage() {
+            localStorage.setItem('gs_products', JSON.stringify(products));
+            localStorage.setItem('gs_orders', JSON.stringify(orders));
+            localStorage.setItem('gs_cart', JSON.stringify(cart));
+        }
+
+        function switchTab(role) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (role === 'customer') {
+                tabs[0].classList.add('active');
+                document.getElementById('customerLoginForm').classList.remove('hidden');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('customerLoginForm').classList.add('hidden');
+                document.getElementById('adminLoginForm').classList.remove('hidden');
+            }
+        }
+
+        function loginAdmin(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+
+            if (user === 'suci' && pass === '333') {
+                currentUser = { role: 'admin', name: 'Suci (Admin)' };
+                localStorage.setItem('gs_session', JSON.stringify(currentUser));
+                checkSession();
+            } else {
+                alert('Username atau Password Admin Salah!');
+            }
+        }
+
+        function loginCustomer(e) {
+            e.preventDefault();
+            const name = document.getElementById('custName').value.trim();
+            if (name) {
+                currentUser = { role: 'customer', name: name };
+                localStorage.setItem('gs_session', JSON.stringify(currentUser));
+                checkSession();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('gs_session');
+            currentUser = null;
+            checkSession();
+        }
+
+        function checkSession() {
+            const authSection = document.getElementById('authSection');
+            const mainHeader = document.getElementById('mainHeader');
+            const dashboardSection = document.getElementById('dashboardSection');
+            const adminPanel = document.getElementById('adminPanel');
+            const adminOrdersPanel = document.getElementById('adminOrdersPanel');
+            const userInfoText = document.getElementById('userInfoText');
+
+            if (currentUser) {
+                authSection.classList.add('hidden');
+                mainHeader.classList.remove('hidden');
+                dashboardSection.classList.remove('hidden');
+                userInfoText.innerText = `Login sebagai: ${currentUser.name}`;
+
+                if (currentUser.role === 'admin') {
+                    adminPanel.classList.remove('hidden');
+                    adminOrdersPanel.classList.remove('hidden');
+                    renderAdminOrders();
+                } else {
+                    adminPanel.classList.add('hidden');
+                    adminOrdersPanel.classList.add('hidden');
+                }
+
+                renderCatalog();
+                renderCart();
+                renderBuyerOrders();
+            } else {
+                authSection.classList.remove('hidden');
+                mainHeader.classList.add('hidden');
+                dashboardSection.classList.add('hidden');
+            }
+        }
+
+        function addProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('prodName').value;
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const desc = document.getElementById('prodDesc').value;
+            const image = document.getElementById('prodImage').value;
+            const video = document.getElementById('prodVideo').value;
+
+            const newProduct = { id: Date.now(), name, price, desc, image, video };
+            products.push(newProduct);
+            saveToStorage();
+            renderCatalog();
+            document.getElementById('productForm').reset();
+            alert('Produk berhasil disimpan!');
+        }
+
+        function renderCatalog() {
+            const catalog = document.getElementById('productCatalog');
+            catalog.innerHTML = '';
+
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x180?text=Gambar+Tidak+Tersedia'">
+                    <div class="product-details">
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>
+                        <div class="product-desc">${p.desc}</div>
+                        <video controls>
+                            <source src="${p.video}" type="video/mp4">
+                        </video>
+                        <button class="btn-primary" onclick="addToCart(${p.id})">+ Masukkan Keranjang</button>
+                    </div>
+                `;
+                catalog.appendChild(card);
+            });
+        }
+
+        // Fitur Keranjang
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingIndex = cart.findIndex(item => item.productId === productId && item.userName === currentUser.name);
+
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += 1;
+            } else {
+                cart.push({
+                    cartId: Date.now(),
+                    userName: currentUser.name,
+                    productId: product.id,
+                    name: product.name,
+                    price: product.price,
+                    qty: 1
+                });
+            }
+
+            saveToStorage();
+            renderCart();
+            alert(`${product.name} telah ditambahkan ke keranjang!`);
+        }
+
+        function updateCartQty(cartId, change) {
+            const index = cart.findIndex(item => item.cartId === cartId);
+            if (index > -1) {
+                cart[index].qty += change;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+                saveToStorage();
+                renderCart();
+            }
+        }
+
+        function removeFromCart(cartId) {
+            cart = cart.filter(item => item.cartId !== cartId);
+            saveToStorage();
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cartTableBody');
+            const cartSummarySection = document.getElementById('cartSummarySection');
+            const userCart = cart.filter(item => item.userName === currentUser.name);
+            
+            document.getElementById('cartCount').innerText = userCart.reduce((acc, curr) => acc + curr.qty, 0);
+            tbody.innerHTML = '';
+
+            if (userCart.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Keranjang Anda masih kosong.</td></tr>`;
+                cartSummarySection.style.display = 'none';
+                return;
+            }
+
+            cartSummarySection.style.display = 'block';
+            let total = 0;
+
+            userCart.forEach(item => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${item.name}</b></td>
+                    <td>Rp ${item.price.toLocaleString('id-ID')}</td>
+                    <td>
+                        <button class="btn-qty" onclick="updateCartQty(${item.cartId}, -1)">-</button>
+                        <span style="margin: 0 8px; font-weight: bold;">${item.qty}</span>
+                        <button class="btn-qty" onclick="updateCartQty(${item.cartId}, 1)">+</button>
+                    </td>
+                    <td>Rp ${subtotal.toLocaleString('id-ID')}</td>
+                    <td><button class="btn-delete" onclick="removeFromCart(${item.cartId})">Hapus</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('cartTotalAmount').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        // Checkout dari Keranjang
+        function checkoutCart() {
+            const userCart = cart.filter(item => item.userName === currentUser.name);
+            const address = document.getElementById('checkoutAddress').value.trim();
+
+            if (userCart.length === 0) {
+                alert('Keranjang Anda kosong!');
+                return;
+            }
+
+            if (!address) {
+                alert('Harap isi Alamat Pengiriman Lengkap sebelum melanjutkan checkout!');
+                return;
+            }
+
+            const totalAmount = userCart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+            const itemDetails = userCart.map(i => `${i.name} (x${i.qty})`).join(', ');
+
+            const newOrder = {
+                orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+                customerName: currentUser.name,
+                items: itemDetails,
+                totalPrice: totalAmount,
+                address: address,
+                status: 'Belum Dibayar'
+            };
+
+            orders.push(newOrder);
+            // Hapus barang belanjaan pengguna yang sudah di-checkout dari keranjang
+            cart = cart.filter(item => item.userName !== currentUser.name);
+
+            saveToStorage();
+            document.getElementById('checkoutAddress').value = '';
+            renderCart();
+            renderBuyerOrders();
+            if (currentUser.role === 'admin') renderAdminOrders();
+
+            alert(`Pesanan Berhasil dibuat!\nID Pesanan: ${newOrder.orderId}`);
+        }
+
+        function renderBuyerOrders() {
+            const tbody = document.getElementById('buyerOrderTableBody');
+            tbody.innerHTML = '';
+
+            const userOrders = orders.filter(o => o.customerName === currentUser.name);
+
+            if (userOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Belum ada pesanan dibuat.</td></tr>`;
+                return;
+            }
+
+            userOrders.forEach(o => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${o.orderId}</b></td>
+                    <td>${o.items}</td>
+                    <td>Rp ${o.totalPrice.toLocaleString('id-ID')}</td>
+                    <td>${o.address}</td>
+                    <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderAdminOrders() {
+            const tbody = document.getElementById('adminOrderTableBody');
+            tbody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Belum ada transaksi masuk.</td></tr>`;
+                return;
+            }
+
+            orders.forEach((o, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${o.orderId}</b></td>
+                    <td>${o.customerName}</td>
+                    <td>${o.items}</td>
+                    <td>Rp ${o.totalPrice.toLocaleString('id-ID')}</td>
+                    <td>${o.address}</td>
+                    <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
+                    <td>
+                        <select onchange="updateOrderStatus(${index}, this.value)">
+                            <option value="Belum Dibayar" ${o.status === 'Belum Dibayar' ? 'selected' : ''}>Belum Dibayar</option>
+                            <option value="Diproses" ${o.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
+                            <option value="Dikirim" ${o.status === 'Dikirim' ? 'selected' : ''}>Dikirim</option>
+                            <option value="Selesai" ${o.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
+                        </select>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateOrderStatus(index, newStatus) {
+            orders[index].status = newStatus;
+            saveToStorage();
+            renderAdminOrders();
+            renderBuyerOrders();
+        }
+
+        function getBadgeClass(status) {
+            switch(status) {
+                case 'Belum Dibayar': return 'badge-pending';
+                case 'Diproses': return 'badge-process';
+                case 'Dikirim': return 'badge-shipped';
+                case 'Selesai': return 'badge-completed';
+                default: return '';
+            }
+        }
+    </script>
+</body>
+</html>
