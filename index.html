@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Shop - Management System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER UTAMA -->
+  <header class="main-header">
+    <h1>City Shop Management System</h1>
+  </header>
+
+  <!-- NOTIFIKASI TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- CONTAINER UTAMA -->
+  <div class="app-container">
+
+    <!-- 1. HALAMAN LOGIN -->
+    <section id="loginSection" class="card login-card">
+      <h2>Login City Shop</h2>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password">
+      </div>
+      <button class="btn btn-primary" onclick="login()">Masuk</button>
+      <p id="loginError" class="error-text"></p>
+      <div class="account-hint">
+        <p><b>Akun Akses:</b></p>
+        <p>Admin: <code>suci</code> / <code>12345</code></p>
+        <p>Pelanggan: <code>rara</code> / <code>1234</code></p>
+      </div>
+    </section>
+
+    <!-- 2. WRAPPER UTAMA SETELAH LOGIN -->
+    <div id="mainContent" class="main-content" style="display: none;">
+      
+      <!-- NAV BAR / TOP BAR -->
+      <div class="top-bar">
+        <span id="userGreeting" class="user-greeting"></span>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+      </div>
+
+      <!-- PANEL ADMINISTRATOR -->
+      <section id="adminPanel" class="section-panel" style="display: none;">
+        <div class="panel-header">
+          <h2>📊 Panel Administrator</h2>
+          <p>Manajemen Produk & Media Inventory</p>
+        </div>
+
+        <div class="grid-2-col">
+          <!-- FORM INPUT PRODUK -->
+          <div class="card">
+            <h3>Tambah Produk Baru</h3>
+            <form id="formInputProduk" onsubmit="tambahProduk(event)">
+              <div class="form-group">
+                <label for="namaProduk">Nama Produk</label>
+                <input type="text" id="namaProduk" required placeholder="Contoh: Smartphone Premium / Sepatu Sneakers">
+              </div>
+              <div class="form-group">
+                <label for="hargaProduk">Harga Produk (Rp)</label>
+                <input type="number" id="hargaProduk" required placeholder="Contoh: 1500000">
+              </div>
+              <div class="form-group">
+                <label for="urlGambar">URL Gambar Produk (image source)</label>
+                <input type="url" id="urlGambar" required placeholder="https://images.unsplash.com/...">
+              </div>
+              <div class="form-group">
+                <label for="urlVideo">URL Video Demo (<video controls>)</label>
+                <input type="url" id="urlVideo" required placeholder="https://www.w3schools.com/html/mov_bbb.mp4">
+              </div>
+              <div class="form-group">
+                <label for="deskripsiProduk">Deskripsi & Harga</label>
+                <textarea id="deskripsiProduk" rows="3" required placeholder="Spesifikasi utama produk..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-success">Simpan Produk ke Database</button>
+            </form>
+          </div>
+
+          <!-- TABEL INVENTARIS PRODUK -->
+          <div class="card">
+            <h3>Daftar Inventaris Produk</h3>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Gambar</th>
+                    <th>Nama Produk</th>
+                    <th>Harga</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelAdminProduk"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- LAPORAN PESANAN MASUK -->
+        <div class="card style-margin-top">
+          <h3>Daftar Pesanan Pelanggan</h3>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Pelanggan</th>
+                  <th>Produk</th>
+                  <th>Total</th>
+                  <th>Status Pesanan</th>
+                  <th>Ubah Status</th>
+                </tr>
+              </thead>
+              <tbody id="tabelAdminPesanan"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- PANEL PEMBELI (CUSTOMER) -->
+      <section id="customerPanel" class="section-panel" style="display: none;">
+        <!-- TAB NAVIGASI PELANGGAN -->
+        <div class="customer-tabs">
+          <button class="tab-btn active" onclick="switchCustomerTab('katalogTab')">🏪 Katalog Produk</button>
+          <button class="tab-btn" onclick="switchCustomerTab('pesananTab')">📦 Status Pesanan Saya</button>
+        </div>
+
+        <!-- TAB 1: KATALOG PRODUK -->
+        <div id="katalogTab" class="tab-content active">
+          <div class="panel-header">
+            <h2>🛍️ Katalog Barang Dagangan</h2>
+            <p>Pilihan produk terbaik di City Shop</p>
+          </div>
+          <div id="katalogGrid" class="katalog-grid"></div>
+        </div>
+
+        <!-- TAB 2: STATUS PESANAN -->
+        <div id="pesananTab" class="tab-content">
+          <div class="panel-header">
+            <h2>🚚 Lacak Status Pesanan</h2>
+            <p>Pantau proses checkout dan pengiriman barang Anda</p>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Nama Produk</th>
+                    <th>Harga Total</th>
+                    <th>Status Pesanan</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelPesananCustomer"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
