@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Shop - Management System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f9;
+      color: #333;
+      padding-bottom: 40px;
+    }
+
+    /* HEADER UTAMA */
+    .main-header {
+      background: #007bff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .main-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* CONTAINER & CARD */
+    .app-container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border: 1px solid #e1e8ed;
+    }
+
+    .style-margin-top {
+      margin-top: 20px;
+    }
+
+    .grid-2-col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .grid-2-col {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* LOGIN FORM */
+    .login-card {
+      max-width: 400px;
+      margin: 50px auto;
+    }
+
+    .login-card h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #007bff;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="password"],
+    .form-group textarea, 
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    /* INPUT FILE UPLOAD */
+    .form-group input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      background: #f8f9fa;
+      border: 1px dashed #007bff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .form-group input[type="file"]::file-selector-button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .form-group input[type="file"]::file-selector-button:hover {
+      background: #0056b3;
+    }
+
+    .form-group input:focus, 
+    .form-group textarea:focus {
+      border-color: #007bff;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-primary { background: #007bff; color: white; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-warning { background: #ffc107; color: #212529; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .error-text {
+      color: #dc3545;
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .account-hint {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e9ecef;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .user-greeting {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .top-bar .btn-danger {
+      width: auto;
+      padding: 6px 16px;
+    }
+
+    /* PANEL HEADER */
+    .panel-header {
+      margin-bottom: 20px;
+    }
+
+    .panel-header h2 {
+      color: #2c3e50;
+      font-size: 20px;
+    }
+
+    .panel-header p {
+      color: #6c757d;
+      font-size: 13px;
+    }
+
+    /* TABS CUSTOMER */
+    .customer-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border: none;
+      background: #e2e8f0;
+      color: #4a5568;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #007bff;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* KATALOG GRID */
+    .katalog-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 600px) {
+      .katalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .katalog-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* PRODUK CARD */
+    .produk-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      border: 1px solid #e1e8ed;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .produk-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background-color: #eee;
+    }
+
+    .produk-info {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .produk-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 4px;
+    }
+
+    .harga-kontras {
+      color: #007bff;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .deskripsi-singkat {
+      font-size: 13px;
+      color: #6c757d;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .video-container {
+      margin-bottom: 12px;
+    }
+
+    .video-container video {
+      width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      background: #000;
+    }
+
+    /* TABEL */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid #dee2e6;
+      padding: 10px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 5px;
+    }
+
+    .action-btns .btn {
+      width: auto;
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER UTAMA -->
+  <header class="main-header">
+    <h1>City Shop Management System</h1>
+  </header>
+
+  <!-- NOTIFIKASI TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- CONTAINER UTAMA -->
+  <div class="app-container">
+
+    <!-- 1. HALAMAN LOGIN -->
+    <section id="loginSection" class="card login-card">
+      <h2>Login City Shop</h2>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password">
+      </div>
+      <button class="btn btn-primary" onclick="login()">Masuk</button>
+      <p id="loginError" class="error-text"></p>
+      <div class="account-hint">
+        <p><b>Akun Akses:</b></p>
+        <p>Admin: <code>suci</code> / <code>12345</code></p>
+        <p>Pelanggan: <code>rara</code> / <code>1234</code></p>
+      </div>
+    </section>
+
+    <!-- 2. WRAPPER UTAMA SETELAH LOGIN -->
+    <div id="mainContent" class="main-content" style="display: none;">
+
+      <!-- NAV BAR / TOP BAR -->
+      <div class="top-bar">
+        <span id="userGreeting" class="user-greeting"></span>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+      </div>
+
+      <!-- PANEL ADMINISTRATOR -->
+      <section id="adminPanel" class="section-panel" style="display: none;">
+        <div class="panel-header">
+          <h2>📊 Panel Administrator</h2>
+          <p>Manajemen Produk & Media Inventory</p>
+        </div>
+
+        <div class="grid-2-col">
+          <!-- FORM INPUT / EDIT PRODUK -->
+          <div class="card">
+            <h3 id="formTitle">Tambah Produk Baru</h3>
+            <form id="formInputProduk" onsubmit="simpanProduk(event)">
+              <input type="hidden" id="editProdukId" value="">
+              
+              <div class="form-group">
+                <label for="namaProduk">Nama Produk</label>
+                <input type="text" id="namaProduk" required placeholder="Contoh: Smartphone Premium / Sepatu Sneakers">
+              </div>
+              
+              <div class="form-group">
+                <label for="hargaProduk">Harga Produk (Rp)</label>
+                <input type="number" id="hargaProduk" required placeholder="Contoh: 1500000">
+              </div>
+
+              <!-- FOTO PRODUK (PILIHAN FILE ATAU URL) -->
+              <div class="form-group">
+                <label for="fileGambar">Upload Foto Produk Baru (Kosongkan jika tidak diganti)</label>
+                <input type="file" id="fileGambar" accept="image/*">
+                <label for="urlGambar" style="margin-top: 8px; font-weight: normal; font-size: 12px;">Atau Masukkan URL Gambar (Opsional):</label>
+                <input type="text" id="urlGambar" placeholder="https://example.com/gambar.jpg">
+              </div>
+
+              <!-- VIDEO DEMO PRODUK (PILIHAN FILE ATAU URL) -->
+              <div class="form-group">
+                <label for="fileVideo">Upload Video Demo Produk Baru (Kosongkan jika tidak diganti)</label>
+                <input type="file" id="fileVideo" accept="video/*">
+                <label for="urlVideo" style="margin-top: 8px; font-weight: normal; font-size: 12px;">Atau Masukkan URL Video Direct (.mp4):</label>
+                <input type="text" id="urlVideo" placeholder="https://www.w3schools.com/html/mov_bbb.mp4">
+              </div>
+
+              <div class="form-group">
+                <label for="deskripsiProduk">Deskripsi Spesifikasi</label>
+                <textarea id="deskripsiProduk" rows="3" required placeholder="Spesifikasi utama produk..."></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" id="btnSimpan" class="btn btn-success">Simpan Produk ke Database</button>
+                <button type="button" id="btnBatalEdit" class="btn btn-secondary" style="display: none;" onclick="batalEdit()">Batal</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- TABEL INVENTARIS PRODUK -->
+          <div class="card">
+            <h3>Daftar Inventaris Produk</h3>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Media</th>
+                    <th>Nama Produk</th>
+                    <th>Harga</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelAdminProduk"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- LAPORAN PESANAN MASUK -->
+        <div class="card style-margin-top">
+          <h3>Daftar Pesanan Pelanggan</h3>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Pelanggan</th>
+                  <th>Produk</th>
+                  <th>Total</th>
+                  <th>Status Pesanan</th>
+                  <th>Ubah Status</th>
+                </tr>
+              </thead>
+              <tbody id="tabelAdminPesanan"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL PEMBELI (CUSTOMER) -->
+      <section id="customerPanel" class="section-panel" style="display: none;">
+        <!-- TAB NAVIGASI PELANGGAN -->
+        <div class="customer-tabs">
+          <button class="tab-btn active" onclick="switchCustomerTab(event, 'katalogTab')">🏪 Katalog Produk</button>
+          <button class="tab-btn" onclick="switchCustomerTab(event, 'pesananTab')">📦 Status Pesanan Saya</button>
+        </div>
+
+        <!-- TAB 1: KATALOG PRODUK -->
+        <div id="katalogTab" class="tab-content active">
+          <div class="panel-header">
+            <h2>🛍️ Katalog Barang Dagangan</h2>
+            <p>Pilihan produk terbaik di City Shop</p>
+          </div>
+          <div id="katalogGrid" class="katalog-grid"></div>
+        </div>
+
+        <!-- TAB 2: STATUS PESANAN -->
+        <div id="pesananTab" class="tab-content">
+          <div class="panel-header">
+            <h2>🚚 Lacak Status Pesanan</h2>
+            <p>Pantau proses checkout dan pengiriman barang Anda</p>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Nama Produk</th>
+                    <th>Harga Total</th>
+                    <th>Status Pesanan</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelPesananCustomer"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIKA APLIKASI -->
+  <script>
+    // DATA DEFAULT PRODUK
+    const defaultProduk = [
+      {
+        id: 101,
+        nama: "Smartphone Premium",
+        harga: 12000000,
+        gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        deskripsi: "Spesifikasi utama: layar 120Hz, RAM 12GB, memori 256GB."
+      },
+      {
+        id: 102,
+        nama: "Laptop Ultra",
+        harga: 18500000,
+        gambar: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        deskripsi: "Spesifikasi utama: Intel i7 Gen 13, RAM 16GB, SSD 1TB."
+      }
+    ];
+
+    let dataProduk = [];
+    let dataPesanan = JSON.parse(localStorage.getItem('cityShop_pesanan')) || [];
+    let currentUser = null;
+
+    // --- INDEXEDDB UNTUK PENGELOLAAN MEDIA KAPASITAS BESAR ---
+    let db;
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open("CityShopDB", 1);
+        request.onupgradeneeded = (e) => {
+          db = e.target.result;
+          if (!db.objectStoreNames.contains("produkStore")) {
+            db.createObjectStore("produkStore", { keyPath: "id" });
+          }
+        };
+        request.onsuccess = (e) => {
+          db = e.target.result;
+          resolve(db);
+        };
+        request.onerror = (e) => reject("IndexedDB Error: " + e.target.errorCode);
+      });
+    }
+
+    async function muatDataProduk() {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("produkStore", "readonly");
+        const store = tx.objectStore("produkStore");
+        const request = store.getAll();
+        request.onsuccess = async () => {
+          if (request.result.length === 0) {
+            for (let item of defaultProduk) {
+              await simpanProdukKeDB(item);
+            }
+            dataProduk = defaultProduk;
+          } else {
+            dataProduk = request.result;
+          }
+          resolve(dataProduk);
+        };
+        request.onerror = (e) => reject(e);
+      });
+    }
+
+    function simpanProdukKeDB(produk) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("produkStore", "readwrite");
+        const store = tx.objectStore("produkStore");
+        store.put(produk);
+        tx.oncomplete = () => resolve();
+        tx.onerror = (e) => reject(e);
+      });
+    }
+
+    function hapusProdukDariDB(id) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("produkStore", "readwrite");
+        const store = tx.objectStore("produkStore");
+        store.delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = (e) => reject(e);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await initDB();
+        await muatDataProduk();
+      } catch (err) {
+        console.error("Gagal menginisialisasi Database:", err);
+      }
+    });
+
+    function simpanPesananKeStorage() {
+      localStorage.setItem('cityShop_pesanan', JSON.stringify(dataPesanan));
+    }
+
+    // SYSTEM LOGIN
+    function login() {
+      const u = document.getElementById('username').value.trim().toLowerCase();
+      const p = document.getElementById('password').value.trim();
+      const errorEl = document.getElementById('loginError');
+
+      if (u === "suci" && p === "12345") {
+        currentUser = { username: "suci", role: "admin" };
+        errorEl.innerText = "";
+        bukaDashboard();
+      } else if (u === "rara" && p === "1234") {
+        currentUser = { username: "rara", role: "customer" };
+        errorEl.innerText = "";
+        bukaDashboard();
+      } else {
+        errorEl.innerText = "Username atau Password salah!";
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    function bukaDashboard() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+      document.getElementById('userGreeting').innerText = `Halo, ${currentUser.username.toUpperCase()} (${currentUser.role.toUpperCase()})`;
+
+      if (currentUser.role === 'admin') {
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('customerPanel').style.display = 'none';
+        renderAdminView();
+      } else {
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('customerPanel').style.display = 'block';
+        renderCustomerView();
+      }
+    }
+
+    // CONVERT FILE KE BASE64
+    const readFileAsBase64 = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
+    };
+
+    
+    /* --- FITUR ADMIN --- */
+    function renderAdminView() {
+      const tbodyProduk = document.getElementById('tabelAdminProduk');
+      tbodyProduk.innerHTML = dataProduk.map(p => `
+        <tr>
+          <td>
+            <img src="${p.gambar}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; display:block; margin-bottom:4px;">
+            <span style="font-size:10px; color:#666;">🎥 ${p.video ? 'Ada Video' : 'Tanpa Video'}</span>
+          </td>
+          <td><b>${p.nama}</b><br><small style="color:#777;">${p.deskripsi}</small></td>
+          <td>Rp ${p.harga.toLocaleString('id-ID')}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn btn-warning" onclick="editProduk(${p.id})">Edit / Ganti Video</button>
+              <button class="btn btn-danger" onclick="hapusProduk(${p.id})">Hapus</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      const tbodyPesanan = document.getElementById('tabelAdminPesanan');
+      if (dataPesanan.length === 0) {
+        tbodyPesanan.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada pesanan masuk</td></tr>`;
+      } else {
+        tbodyPesanan.innerHTML = dataPesanan.map((p, index) => `
+          <tr>
+            <td>${p.tanggal}</td>
+            <td>${p.pelanggan}</td>
+            <td>${p.namaProduk}</td>
+            <td>Rp ${p.harga.toLocaleString('id-ID')}</td>
+            <td><b>${p.status}</b></td>
+            <td>
+              <select onchange="ubahStatusPesanan(${index}, this.value)" style="padding:4px; font-size:12px;">
+                <option value="Pesanan Belum Dibayar" ${p.status === 'Pesanan Belum Dibayar' ? 'selected' : ''}>Belum Dibayar</option>
+                <option value="Pesanan Diproses" ${p.status === 'Pesanan Diproses' ? 'selected' : ''}>Diproses</option>
+                <option value="Pesanan Dikirim" ${p.status === 'Pesanan Dikirim' ? 'selected' : ''}>Dikirim</option>
+                <option value="Pesanan Selesai" ${p.status === 'Pesanan Selesai' ? 'selected' : ''}>Selesai</option>
+              </select>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    async function simpanProduk(e) {
+      e.preventDefault();
+
+      const editId = document.getElementById('editProdukId').value;
+      const nama = document.getElementById('namaProduk').value;
+      const harga = parseInt(document.getElementById('hargaProduk').value);
+      const deskripsi = document.getElementById('deskripsiProduk').value;
+
+      const fileGambarInput = document.getElementById('fileGambar').files[0];
+      const urlGambarInput = document.getElementById('urlGambar').value.trim();
+
+      const fileVideoInput = document.getElementById('fileVideo').files[0];
+      const urlVideoInput = document.getElementById('urlVideo').value.trim();
+
+      let gambarFinal = "";
+      let videoFinal = "";
+
+      let produkLama = editId ? dataProduk.find(p => p.id == editId) : null;
+
+      // HAPUS BILA ADA GAMBAR BARU
+      if (fileGambarInput) {
+        showToast("Memproses upload foto...");
+        gambarFinal = await readFileAsBase64(fileGambarInput);
+      } else if (urlGambarInput) {
+        gambarFinal = urlGambarInput;
+      } else if (produkLama) {
+        gambarFinal = produkLama.gambar;
+      } else {
+        gambarFinal = "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500";
+      }
+
+      // HAPUS BILA ADA VIDEO BARU
+      if (fileVideoInput) {
+        showToast("Memproses upload video...");
+        videoFinal = await readFileAsBase64(fileVideoInput);
+      } else if (urlVideoInput) {
+        videoFinal = urlVideoInput;
+      } else if (produkLama) {
+        videoFinal = produkLama.video;
+      } else {
+        videoFinal = "https://www.w3schools.com/html/mov_bbb.mp4";
+      }
+
+      if (editId) {
+        // UPDATE PRODUK
+        const index = dataProduk.findIndex(p => p.id == editId);
+        if (index !== -1) {
+       
+
+    /* --- FITUR CUSTOMER --- */
+    function switchCustomerTab(e, tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      e.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+
+      if (tabId === 'pesananTab') renderPesananCustomer();
+      if (tabId === 'katalogTab') renderCustomerView();
+    }
+
+    function renderCustomerView() {
+      const grid = document.getElementById('katalogGrid');
+      grid.innerHTML = dataProduk.map(p => `
+        <div class="produk-card">
+          <img src="${p.gambar}" alt="${p.nama}" onerror="this.src='https://via.placeholder.com/500x300?text=Gambar+Tidak+Tersedia'">
+          <div class="produk-info">
+            <div class="produk-title">${p.nama}</div>
+            <div class="harga-kontras">Rp ${p.harga.toLocaleString('id-ID')}</div>
+            <div class="deskripsi-singkat">${p.deskripsi}</div>
+            
+            <div class="video-container">
+              <video controls key="${p.video}">
+                <source src="${p.video}">
+                Browser Anda tidak mendukung pemutaran video.
+              </video>
+            </div>
+
+            <a href="#" class="btn btn-primary" onclick="prosesCheckout(${p.id}); return false;">Beli Sekarang</a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function prosesCheckout(idProduk) {
+      const p = dataProduk.find(item => item.id === idProduk);
+      const pesananBaru = {
+        tanggal: new Date().toISOString().split('T')[0],
+        pelanggan: currentUser.username,
+        namaProduk: p.nama,
+        harga: p.harga,
+        status: 'Pesanan Diproses'
+      };
+
+      dataPesanan.push(pesananBaru);
+      simpanPesananKeStorage();
+      showToast("Pesanan berhasil dibuat!");
+      
+      const eventFake = { target: document.querySelectorAll('.tab-btn')[1] };
+      switchCustomerTab(eventFake, 'pesananTab');
+    }
+
+    function renderPesananCustomer() {
+      const tbody = document.getElementById('tabelPesananCustomer');
+      const pesananSaya = dataPesanan.filter(p => p.pelanggan === currentUser.username);
+
+      if (pesananSaya.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Belum ada riwayat transaksi.</td></tr>`;
+      } else {
+        tbody.innerHTML = pesananSaya.map(p => `
+          <tr>
+            <td>${p.tanggal}</td>
+            <td><b>${p.namaProduk}</b></td>
+            <td>Rp ${p.harga.toLocaleString('id-ID')}</td>
+            <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:4px; font-weight:bold;">${p.status}</span></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    /* TOAST NOTIFIKASI */
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+  </script>
+</body>
+</html>
